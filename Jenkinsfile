@@ -55,7 +55,7 @@ pipeline {
             steps {
                 script {
                     dir('complete') {
-                        // Using credentials for Nexus upload
+                        // Use Jenkins credentials for Nexus upload
                         withCredentials([usernamePassword(credentialsId: 'nexus_credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
                             sh """
                                 mvn deploy:deploy-file \
