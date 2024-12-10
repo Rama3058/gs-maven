@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     dir('complete') {
-                        withCredentials([usernamePassword(credentialsId: 'sonar', usernameVariable: 'SONAR_USER', passwordVariable: 'SONAR_TOKEN')]) {
+                        withCredentials([usernamePassword(credentialsId: 'SONAR_TOKEN', usernameVariable: 'SONAR_USER', passwordVariable: 'SONAR_TOKEN')]) {
                             sh """
                                 mvn clean verify sonar:sonar \
                                     -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
