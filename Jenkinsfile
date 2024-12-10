@@ -55,12 +55,14 @@ pipeline {
             steps {
                 script {
                     dir('complete') {
-                        // Parse values from the pom.xml dynamically
-                        def pom = readMavenPom file: 'pom.xml'
-                        def groupId = pom.groupId
-                        def artifactId = pom.artifactId
-                        def version = pom.version
-                        def packaging = pom.packaging
+                        // Parse pom.xml to extract groupId, artifactId, version, packaging
+                        def pomFile = readFile('pom.xml')
+                        def pom = new XmlParser().parseText(pomFile)
+                        
+                        def groupId = pom.groupId.text()
+                        def artifactId = pom.artifactId.text()
+                        def version = pom.version.text()
+                        def packaging = pom.packaging.text()
 
                         // Using credentials for Nexus upload
                         withCredentials([usernamePassword(credentialsId: 'nexus_credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
