@@ -9,14 +9,11 @@ pipeline {
         SONAR_HOST_URL = 'http://3.109.186.241:9000' // SonarQube server URL
         SONAR_PROJECT_KEY = 'org.springframework:gs-maven'
         SONAR_PROJECT_NAME = 'gs-maven'
-        NEXUS_URL = 'http://65.2.143.128:8081/repository/maven-snapshots/' // Nexus Snapshot Repository URL
+        NEXUS_URL = 'http://65.2.143.128:8081/repository/maven-snapshots/' // Updated Nexus Snapshot Repository URL
         TOMCAT_HOST = 'http://65.0.168.203:8080'
         TOMCAT_USER = 'admin'
         TOMCAT_PASSWORD = 'Sushmi@2001'
         TOMCAT_DEPLOY_URL = "http://${TOMCAT_USER}:${TOMCAT_PASSWORD}@${TOMCAT_HOST}:8080/manager/text/deploy?path=/gs-maven&update=true"
-
-        // Set MAVEN_OPTS to pass authentication credentials
-        MAVEN_OPTS = "-Dmaven.deploy.skip=false -Dorg.apache.maven.wagon.http.authentication.username=admin -Dorg.apache.maven.wagon.http.authentication.password=lokitha@123"
     }
 
     stages {
@@ -58,18 +55,24 @@ pipeline {
             steps {
                 script {
                     dir('complete') {
+                        // Parse values from the pom.xml dynamically
+                        def pom = readMavenPom file: 'pom.xml'
+                        def groupId = pom.groupId
+                        def artifactId = pom.artifactId
+                        def version = pom.version
+                        def packaging = pom.packaging
+
                         // Using credentials for Nexus upload
                         withCredentials([usernamePassword(credentialsId: 'nexus_credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
                             sh """
                                 mvn deploy:deploy-file \
-                                    -U \
                                     -Durl=${NEXUS_URL} \
                                     -DrepositoryId=maven-snapshots \
-                                    -Dfile=target/gs-maven-1.0.0-SNAPSHOT.jar \
-                                    -DgroupId=org.springframework \
-                                    -DartifactId=gs-maven \
-                                    -Dversion=1.0.0-SNAPSHOT \
-                                    -Dpackaging=jar \
+                                    -Dfile=target/${artifactId}-${version}.${packaging} \
+                                    -DgroupId=${groupId} \
+                                    -DartifactId=${artifactId} \
+                                    -Dversion=${version} \
+                                    -Dpackaging=${packaging} \
                                     -Dusername=${NEXUS_USER} \
                                     -Dpassword=${NEXUS_PASSWORD}
                             """
