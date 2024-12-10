@@ -14,6 +14,9 @@ pipeline {
         TOMCAT_USER = 'admin'
         TOMCAT_PASSWORD = 'Sushmi@2001'
         TOMCAT_DEPLOY_URL = "http://${TOMCAT_USER}:${TOMCAT_PASSWORD}@${TOMCAT_HOST}:8080/manager/text/deploy?path=/gs-maven&update=true"
+
+        // Set MAVEN_OPTS to pass authentication credentials
+        MAVEN_OPTS = "-Dmaven.deploy.skip=false -Dorg.apache.maven.wagon.http.authentication.username=admin -Dorg.apache.maven.wagon.http.authentication.password=lokitha@123"
     }
 
     stages {
@@ -55,10 +58,11 @@ pipeline {
             steps {
                 script {
                     dir('complete') {
-                        // Use Jenkins credentials for Nexus upload
+                        // Using credentials for Nexus upload
                         withCredentials([usernamePassword(credentialsId: 'nexus_credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
                             sh """
                                 mvn deploy:deploy-file \
+                                    -U \
                                     -Durl=${NEXUS_URL} \
                                     -DrepositoryId=maven-snapshots \
                                     -Dfile=target/gs-maven-1.0.0-SNAPSHOT.jar \
