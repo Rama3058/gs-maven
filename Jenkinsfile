@@ -9,7 +9,7 @@ pipeline {
         SONAR_HOST_URL = 'http://3.109.186.241:9000' // SonarQube server URL
         SONAR_PROJECT_KEY = 'org.springframework:gs-maven'
         SONAR_PROJECT_NAME = 'gs-maven'
-        NEXUS_URL = 'http://65.2.143.128:8081/repository/maven-snapshots/' // Updated Nexus Snapshot Repository URL
+        NEXUS_URL = 'http://65.2.143.128:8081/repository/maven-snapshots/' // Nexus Snapshot Repository URL
         TOMCAT_HOST = 'http://65.0.168.203:8080'
         TOMCAT_USER = 'admin'
         TOMCAT_PASSWORD = 'Sushmi@2001'
@@ -55,14 +55,12 @@ pipeline {
             steps {
                 script {
                     dir('complete') {
-                        // Parse pom.xml to extract groupId, artifactId, version, packaging
+                        // Manually extracting details from pom.xml
                         def pomFile = readFile('pom.xml')
-                        def pom = new XmlParser().parseText(pomFile)
-                        
-                        def groupId = pom.groupId.text()
-                        def artifactId = pom.artifactId.text()
-                        def version = pom.version.text()
-                        def packaging = pom.packaging.text()
+                        def groupId = pomFile =~ /<groupId>(.*?)<\/groupId>/[0][1]
+                        def artifactId = pomFile =~ /<artifactId>(.*?)<\/artifactId>/[0][1]
+                        def version = pomFile =~ /<version>(.*?)<\/version>/[0][1]
+                        def packaging = pomFile =~ /<packaging>(.*?)<\/packaging>/[0][1] ?: 'jar' // Default to 'jar' if packaging is missing
 
                         // Using credentials for Nexus upload
                         withCredentials([usernamePassword(credentialsId: 'nexus_credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
