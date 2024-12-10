@@ -1,7 +1,4 @@
 pipeline {
-    //    triggers {
-    //     cron('* * * * *')
-    // }
     agent any
 
     tools {
@@ -13,10 +10,11 @@ pipeline {
         SONAR_PROJECT_KEY = 'org.springframework:gs-maven'
         SONAR_PROJECT_NAME = 'gs-maven'
         NEXUS_URL = 'http://13.233.245.91:8081/repository/maven-releases/' // Nexus HTTP URL
+        NEXUS_CREDENTIALS = 'nexus_credentials'
         TOMCAT_HOST = 'http://65.0.168.203:8080'
         TOMCAT_USER = 'admin'
         TOMCAT_PASSWORD = 'Sushmi@2001'
-        TOMCAT_DEPLOY_URL = "http://${TOMCAT_USER}:${TOMCAT_PASSWORD}@${TOMCAT_HOST}:8080/manager/text/deploy?path=/gs-maven&update=true"
+        TOMCAT_DEPLOY_URL = "http://${TOMCAT_USER}:${TOMCAT_PASSWORD}@${TOMCAT_HOST}/manager/text/deploy?path=/gs-maven&update=true"
     }
 
     stages {
@@ -49,6 +47,23 @@ pipeline {
                 script {
                     dir('complete') {
                         sh 'mvn clean package'
+                    }
+                }
+            }
+        }
+
+        stage('Upload to Nexus') {
+            steps {
+                script {
+                    dir('complete') {
+                        withCredentials([usernamePassword(credentialsId: NEXUS_CREDENTIALS, usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                            sh """
+                                mvn deploy \
+                                    -DaltDeploymentRepository=nexus::default::${NEXUS_URL} \
+                                    -Dusername=${NEXUS_USER} \
+                                    -Dpassword=${NEXUS_PASS}
+                            """
+                        }
                     }
                 }
             }
