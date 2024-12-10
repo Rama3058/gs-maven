@@ -55,12 +55,13 @@ pipeline {
             steps {
                 script {
                     dir('complete') {
+                        // Using credentials for Nexus upload
                         withCredentials([usernamePassword(credentialsId: 'nexus_credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
                             sh """
                                 mvn deploy:deploy-file \
                                     -Durl=${NEXUS_URL} \
                                     -DrepositoryId=demo-snapshots \
-                                    -Dfile=target/gs-maven-0.1.0-SNAPSHOT.jar \
+                                    -Dfile=target/gs-maven-1.0.0-SNAPSHOT.jar \
                                     -DgroupId=org.springframework \
                                     -DartifactId=gs-maven \
                                     -Dversion=1.0.0-SNAPSHOT \
