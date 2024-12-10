@@ -60,7 +60,7 @@ pipeline {
                                 mvn deploy:deploy-file \
                                     -Durl=${NEXUS_URL} \
                                     -DrepositoryId=demo-snapshots \
-                                    -Dfile=target/gs-maven-1.0.0-SNAPSHOT.jar \
+                                    -Dfile=complete/target/gs-maven-0.1.0-SNAPSHOT.jar \
                                     -DgroupId=org.springframework \
                                     -DartifactId=gs-maven \
                                     -Dversion=1.0.0-SNAPSHOT \
