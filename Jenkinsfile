@@ -55,7 +55,7 @@ pipeline {
             steps {
                 script {
                     dir('complete') {
-                        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'nexus_credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
                             sh """
                                 mvn deploy:deploy-file \
                                     -Durl=${NEXUS_URL} \
