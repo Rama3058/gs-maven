@@ -9,7 +9,7 @@ pipeline {
         SONAR_HOST_URL = 'http://3.109.186.241:9000' // SonarQube server URL
         SONAR_PROJECT_KEY = 'org.springframework:gs-maven'
         SONAR_PROJECT_NAME = 'gs-maven'
-        NEXUS_URL = 'http://65.2.143.128:8081/repository/demo-snapshots/' // Updated Nexus Snapshot Repository URL
+        NEXUS_URL = 'http://65.2.143.128:8081/repository/maven-snapshots/' // Updated Nexus Snapshot Repository URL
         TOMCAT_HOST = 'http://65.0.168.203:8080'
         TOMCAT_USER = 'admin'
         TOMCAT_PASSWORD = 'Sushmi@2001'
@@ -60,7 +60,7 @@ pipeline {
                             sh """
                                 mvn deploy:deploy-file \
                                     -Durl=${NEXUS_URL} \
-                                    -DrepositoryId=demo-snapshots \
+                                    -DrepositoryId=maven-snapshots \
                                     -Dfile=target/gs-maven-1.0.0-SNAPSHOT.jar \
                                     -DgroupId=org.springframework \
                                     -DartifactId=gs-maven \
